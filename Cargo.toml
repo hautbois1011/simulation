@@ -1,0 +1,10 @@
+[package]
+name = "simulation"
+version = "0.1.0"
+authors = ["hautbois1011 <subterranean_mirror@yahoo.co.jp>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+plotters = "*"
