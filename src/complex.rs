@@ -3,8 +3,8 @@ use std::ops::*;
 /// Complex Number
 #[derive(Debug, Clone, Copy)]
 pub struct Complex {
-    re: f64,
-    im: f64,
+    pub re: f64,
+    pub im: f64,
 }
 
 impl Complex {
@@ -19,8 +19,32 @@ impl Complex {
     pub fn norm2(&self) -> f64 {
         self.re * self.re + self.im * self.im
     }
+
+    pub fn exp(&self) -> Complex {
+        let n = self.re.exp();
+        Complex {
+            re: n * self.im.cos(),
+            im: n * self.im.sin(),
+        }
+    }
+
+    pub fn conj(&self) -> Complex {
+        Complex {
+            re: self.re,
+            im: -self.im,
+        }
+    }
+
+    pub fn exp2pi(x: f64) -> Complex {
+        let theta = 2. * std::f64::consts::PI * x;
+        Complex {
+            re: theta.cos(),
+            im: theta.sin(),
+        }
+    }
 }
 
+// Overload Operators
 impl Add for Complex {
     type Output = Complex;
     fn add(self, rhs: Complex) -> Complex {
