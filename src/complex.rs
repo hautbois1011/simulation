@@ -85,3 +85,12 @@ impl Div for Complex {
         }
     }
 }
+impl Neg for Complex {
+    type Output = Complex;
+    fn neg(self) -> Complex {
+        Complex {
+            re: -self.re,
+            im: -self.im,
+        }
+    }
+}

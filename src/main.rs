@@ -13,26 +13,17 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .margin(20)
         .x_label_area_size(10)
         .y_label_area_size(10)
-        .build_ranged(0.0f64..6.3f64, -20.0f64..20.0f64)?;
+        .build_ranged(0.0f64..10.0f64, -5.0f64..5.0f64)?;
 
     chart.configure_mesh().draw()?;
 
-    let tr: Vec<Complex> = fft(
-        |x| {
-            if -1. <= x && x <= 1. {
-                x.cos()
-            } else {
-                0.
-            }
-        },
-        12,
-    );
+    let tr: Vec<Complex> = fft(|x| 2. * x.sin() + 3. * (2. * x).cos(), 12);
 
     chart
         .draw_series(LineSeries::new(
             tr.iter()
                 .enumerate()
-                .map(|(i, x)| (2. * std::f64::consts::PI * i as f64 / 4096.0, x.re)),
+                .map(|(i, &x)| (i as f64, x.re / 2048.)),
             &RED,
         ))?
         .label("Re");
@@ -41,7 +32,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .draw_series(LineSeries::new(
             tr.iter()
                 .enumerate()
-                .map(|(i, x)| (2. * std::f64::consts::PI * i as f64 / 4096.0, x.im)),
+                .map(|(i, &x)| (i as f64, x.im / 2048.)),
             &BLUE,
         ))?
         .label("Im");
@@ -61,8 +52,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("{:?}", c.norm());
     println!("{:?}", c.norm2());
     println!("{:?}", c.exp());
-
-    println!("{:?}", fft(|x| x.sin(), 5));
 
     Ok(())
 }

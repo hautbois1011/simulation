@@ -8,7 +8,10 @@ where
     let n = 2u32.pow(l) as usize;
     let mut x = vec![vec![Complex::new(0.0, 0.0); n]; (l + 1) as usize];
     for i in 0..n {
-        x[0][i] = Complex::new(func(1000. * (i as f64) / (n as f64) - 500.), 0.0);
+        x[0][i] = Complex::new(
+            func(2. * std::f64::consts::PI * (i as f64) / (n as f64)),
+            0.0,
+        );
     }
 
     let mut p = n >> 1;
@@ -28,9 +31,5 @@ where
         r <<= 1;
     }
 
-    let mut ret = vec![Complex::new(0.0, 0.0); n];
-    for i in 0..n {
-        ret[i] = x[l as usize][i];
-    }
-    ret
+    x[l as usize].clone()
 }
