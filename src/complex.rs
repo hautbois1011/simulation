@@ -12,11 +12,11 @@ impl Complex {
         Complex { re: r, im: i }
     }
 
-    pub fn norm(&self) -> f64 {
+    pub fn abs(&self) -> f64 {
         (self.re * self.re + self.im * self.im).sqrt()
     }
 
-    pub fn norm2(&self) -> f64 {
+    pub fn abs2(&self) -> f64 {
         self.re * self.re + self.im * self.im
     }
 
@@ -78,13 +78,14 @@ impl Mul for Complex {
 impl Div for Complex {
     type Output = Complex;
     fn div(self, rhs: Complex) -> Complex {
-        let r = self.re * rhs.re + self.im * rhs.im;
+        let r = rhs.re * rhs.re + rhs.im * rhs.im;
         Complex {
             re: (self.re * rhs.re + self.im * rhs.im) / r,
             im: (-self.re * rhs.im + self.im * rhs.im) / r,
         }
     }
 }
+
 impl Neg for Complex {
     type Output = Complex;
     fn neg(self) -> Complex {

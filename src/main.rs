@@ -3,7 +3,7 @@ use plotters::prelude::*;
 mod complex;
 use complex::Complex;
 mod fft;
-use fft::fft;
+use fft::*;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let root = BitMapBackend::new("png/fft.png", (800, 600)).into_drawing_area();
@@ -17,7 +17,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .margin(20)
         .x_label_area_size(10)
         .y_label_area_size(10)
-        .build_ranged(0.0f64..50.0f64, -1.0f64..1.0f64)?;
+        .build_ranged(0.0f64..50.0f64, -2.0f64..2.0f64)?;
 
     chart.configure_mesh().draw()?;
 
@@ -26,6 +26,19 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .map(|x| (10. * x).sin())
         .map(|x| Complex::new(x, 0.0))
         .collect();
+
+    // let input = (0..4096)
+    //     .map(|i| {
+    //         if i == 10 {
+    //             1.0f64
+    //         } else if i == 3 {
+    //             0.5f64
+    //         } else {
+    //             0.0f64
+    //         }
+    //     })
+    //     .map(|x| Complex::new(x, 0.0f64))
+    //     .collect();
 
     let output = fft(input);
 
@@ -63,8 +76,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("{:?}", c - d);
     println!("{:?}", c * d);
     println!("{:?}", c / d);
-    println!("{:?}", c.norm());
-    println!("{:?}", c.norm2());
+    println!("{:?}", c.abs());
+    println!("{:?}", c.abs2());
     println!("{:?}", c.exp());
 
     Ok(())
