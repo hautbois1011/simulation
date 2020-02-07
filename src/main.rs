@@ -10,32 +10,46 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     root.fill(&WHITE)?;
 
     let mut chart = ChartBuilder::on(&root)
+        .caption(
+            "Fourier transform of y = sin^10 x/2",
+            ("sans-serif", 30).into_font(),
+        )
         .margin(20)
         .x_label_area_size(10)
         .y_label_area_size(10)
-        .build_ranged(0.0f64..10.0f64, -5.0f64..5.0f64)?;
+        .build_ranged(0.0f64..50.0f64, -1.0f64..1.0f64)?;
 
     chart.configure_mesh().draw()?;
 
-    let tr: Vec<Complex> = fft(|x| 2. * x.sin() + 3. * (2. * x).cos(), 12);
+    let input = (0..4096)
+        .map(|i| 2. * std::f64::consts::PI * (i as f64) / 4096.)
+        .map(|x| (10. * x).sin())
+        .map(|x| Complex::new(x, 0.0))
+        .collect();
+
+    let output = fft(input);
 
     chart
         .draw_series(LineSeries::new(
-            tr.iter()
+            output
+                .iter()
                 .enumerate()
                 .map(|(i, &x)| (i as f64, x.re / 2048.)),
             &RED,
         ))?
-        .label("Re");
+        .label("Re")
+        .legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], &RED));
 
     chart
         .draw_series(LineSeries::new(
-            tr.iter()
+            output
+                .iter()
                 .enumerate()
                 .map(|(i, &x)| (i as f64, x.im / 2048.)),
             &BLUE,
         ))?
-        .label("Im");
+        .label("Im")
+        .legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], &BLUE));
 
     chart
         .configure_series_labels()

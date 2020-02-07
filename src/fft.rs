@@ -1,17 +1,12 @@
 use super::complex::Complex;
-use std::ops::Fn;
 
-pub fn fft<F>(func: F, l: u32) -> Vec<Complex>
-where
-    F: Fn(f64) -> f64,
-{
+pub fn fft(input: Vec<Complex>) -> Vec<Complex> {
+    let len = input.len();
+    let l = (len as f64).log2().ceil() as u32;
     let n = 2u32.pow(l) as usize;
     let mut x = vec![vec![Complex::new(0.0, 0.0); n]; (l + 1) as usize];
-    for i in 0..n {
-        x[0][i] = Complex::new(
-            func(2. * std::f64::consts::PI * (i as f64) / (n as f64)),
-            0.0,
-        );
+    for i in 0..len {
+        x[0][i] = input[i];
     }
 
     let mut p = n >> 1;
