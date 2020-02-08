@@ -11,57 +11,52 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let mut chart = ChartBuilder::on(&root)
         .caption(
-            "Fourier transform of y = sin^10 x/2",
+            "Fourier transform of y = sin x",
             ("sans-serif", 30).into_font(),
         )
         .margin(20)
         .x_label_area_size(10)
         .y_label_area_size(10)
-        .build_ranged(0.0f64..50.0f64, -2.0f64..2.0f64)?;
+        .build_ranged(0.0f64..4096.0f64, -2.0f64..2.0f64)?;
 
     chart.configure_mesh().draw()?;
 
-    let input = (0..4096)
-        .map(|i| 2. * std::f64::consts::PI * (i as f64) / 4096.)
-        .map(|x| (10. * x).sin())
-        .map(|x| Complex::new(x, 0.0))
-        .collect();
-
     // let input = (0..4096)
-    //     .map(|i| {
-    //         if i == 10 {
-    //             1.0f64
-    //         } else if i == 3 {
-    //             0.5f64
-    //         } else {
-    //             0.0f64
-    //         }
-    //     })
-    //     .map(|x| Complex::new(x, 0.0f64))
+    //     .map(|i| 2. * std::f64::consts::PI * (i as f64) / 4096.)
+    //     .map(|x| (10. * x).sin())
+    //     .map(|x| Complex::new(x, 0.0))
     //     .collect();
 
-    let output = fft(input);
+    let input = (0..4096)
+        .map(|i| {
+            if i <= 2048 {
+                (std::f64::consts::PI * (i as f64) / 2048.).sin()
+            } else {
+                0.0f64
+            }
+        })
+        .map(|x| Complex::new(x, 0.0f64))
+        .collect();
+
+    let output = ifft(&fft(&input));
 
     chart
         .draw_series(LineSeries::new(
             output
                 .iter()
                 .enumerate()
-                .map(|(i, &x)| (i as f64, x.re / 2048.)),
+                .map(|(i, &x)| (i as f64, x.re / 4096.)),
             &RED,
         ))?
-        .label("Re")
+        .label("ifft(fft(input))")
         .legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], &RED));
 
     chart
         .draw_series(LineSeries::new(
-            output
-                .iter()
-                .enumerate()
-                .map(|(i, &x)| (i as f64, x.im / 2048.)),
+            input.iter().enumerate().map(|(i, &x)| (i as f64, x.re)),
             &BLUE,
         ))?
-        .label("Im")
+        .label("input")
         .legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], &BLUE));
 
     chart
