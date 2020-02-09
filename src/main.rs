@@ -1,7 +1,6 @@
 extern crate plotters;
 use plotters::prelude::*;
 mod complex;
-use complex::Complex;
 mod fft;
 use fft::*;
 
