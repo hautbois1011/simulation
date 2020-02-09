@@ -17,7 +17,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .margin(20)
         .x_label_area_size(10)
         .y_label_area_size(10)
-        .build_ranged(0.0f64..4096.0f64, -2.0f64..2.0f64)?;
+        .build_ranged(0.0f64..50.0f64, -2.0f64..2.0f64)?;
 
     chart.configure_mesh().draw()?;
 
@@ -28,17 +28,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     //     .collect();
 
     let input = (0..4096)
-        .map(|i| {
-            if i <= 2048 {
-                (std::f64::consts::PI * (i as f64) / 2048.).sin()
-            } else {
-                0.0f64
-            }
-        })
-        .map(|x| Complex::new(x, 0.0f64))
+        .map(|i| 2. * std::f64::consts::PI * (i as f64) / 4096.)
+        .map(|x| x.sin() + x.cos() + 0.5 * (3. * x).cos())
         .collect();
 
-    let output = ifft(&fft(&input));
+    let output = real_fft(&input);
 
     chart
         .draw_series(LineSeries::new(
@@ -53,7 +47,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     chart
         .draw_series(LineSeries::new(
-            input.iter().enumerate().map(|(i, &x)| (i as f64, x.re)),
+            output
+                .iter()
+                .enumerate()
+                .map(|(i, &x)| (i as f64, x.im / 4096.)),
             &BLUE,
         ))?
         .label("input")

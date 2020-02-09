@@ -57,3 +57,28 @@ pub fn fft(input: &Vec<Complex>) -> Vec<Complex> {
 
     x[l as usize].clone()
 }
+
+pub fn real_fft(input: &Vec<f64>) -> Vec<Complex> {
+    let n = input.len();
+    let mut y = vec![Complex::new(0.0, 0.0); n / 2];
+
+    for i in 0..n / 2 {
+        y[i] = Complex::new(input[2 * i], input[2 * i + 1]);
+    }
+
+    let c = ifft(&y);
+
+    let mut a = vec![Complex::new(0.0, 0.0); n / 2 + 1];
+
+    a[0] = Complex::new(c[0].re + c[0].im, 0.0);
+    a[n / 2] = Complex::new(c[0].re - c[0].im, 0.0);
+
+    for k in 1..n / 2 {
+        a[k] = c[n / 2 - k]
+            + c[k].conj()
+            + Complex::new(0.0, -1.0)
+                * Complex::exp2pi(-(k as f64) / (n as f64))
+                * (c[n / 2 - k] - c[k].conj());
+    }
+    a
+}
