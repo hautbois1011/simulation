@@ -80,5 +80,35 @@ pub fn real_fft(input: &Vec<f64>) -> Vec<Complex> {
                 * Complex::exp2pi(-(k as f64) / (n as f64))
                 * (c[n / 2 - k] - c[k].conj());
     }
+
+    a[0] = a[0] / Complex::new(n as f64, 0.0);
+    a[n / 2] = a[n / 2] / Complex::new(n as f64, 0.0);
+    for k in 1..n / 2 {
+        a[k] = a[k] / Complex::new((n * 2) as f64, 0.0);
+    }
+
     a
+}
+
+pub fn real_ifft(input: &Vec<Complex>) -> Vec<f64> {
+    let n = input.len() - 1;
+
+    let d = (0..n)
+        .map(|k| {
+            input[k]
+                + input[n - k].conj()
+                + Complex::new(0.0, 1.0)
+                    * Complex::exp2pi((k as f64) / ((2 * n) as f64))
+                    * (input[k] - input[n - k].conj())
+        })
+        .collect();
+
+    let y = ifft(&d);
+    let mut x = vec![0.0; 2 * n];
+    for i in 0..n {
+        x[2 * i] = y[i].re;
+        x[2 * i + 1] = y[i].im;
+    }
+
+    x
 }

@@ -11,13 +11,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let mut chart = ChartBuilder::on(&root)
         .caption(
-            "Fourier transform of y = sin x",
+            "Fourier transform of y = sin x + cos x + 0.5cos 3x",
             ("sans-serif", 30).into_font(),
         )
         .margin(20)
         .x_label_area_size(10)
         .y_label_area_size(10)
-        .build_ranged(0.0f64..50.0f64, -2.0f64..2.0f64)?;
+        .build_ranged(0.0f64..4096.0f64, -2.0f64..2.0f64)?;
 
     chart.configure_mesh().draw()?;
 
@@ -32,28 +32,22 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .map(|x| x.sin() + x.cos() + 0.5 * (3. * x).cos())
         .collect();
 
-    let output = real_fft(&input);
+    let output = real_ifft(&real_fft(&input));
 
     chart
         .draw_series(LineSeries::new(
-            output
-                .iter()
-                .enumerate()
-                .map(|(i, &x)| (i as f64, x.re / 4096.)),
+            input.iter().enumerate().map(|(i, &x)| (i as f64, x)),
             &RED,
         ))?
-        .label("ifft(fft(input))")
+        .label("input")
         .legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], &RED));
 
     chart
         .draw_series(LineSeries::new(
-            output
-                .iter()
-                .enumerate()
-                .map(|(i, &x)| (i as f64, x.im / 4096.)),
+            output.iter().enumerate().map(|(i, &x)| (i as f64, x)),
             &BLUE,
         ))?
-        .label("input")
+        .label("output")
         .legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], &BLUE));
 
     chart
@@ -62,15 +56,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .border_style(&BLACK)
         .draw()?;
 
-    let c = Complex::new(2.0f64, 3.0f64);
-    let d = Complex::new(2.5f64, 3.0f64);
-    println!("{:?}", c + d);
-    println!("{:?}", c - d);
-    println!("{:?}", c * d);
-    println!("{:?}", c / d);
-    println!("{:?}", c.abs());
-    println!("{:?}", c.abs2());
-    println!("{:?}", c.exp());
+    // let c = Complex::new(2.0f64, 3.0f64);
+    // let d = Complex::new(2.5f64, 3.0f64);
+    // println!("{:?}", c + d);
+    // println!("{:?}", c - d);
+    // println!("{:?}", c * d);
+    // println!("{:?}", c / d);
+    // println!("{:?}", c.abs());
+    // println!("{:?}", c.abs2());
+    // println!("{:?}", c.exp());
 
     Ok(())
 }

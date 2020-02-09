@@ -81,7 +81,7 @@ impl Div for Complex {
         let r = rhs.re * rhs.re + rhs.im * rhs.im;
         Complex {
             re: (self.re * rhs.re + self.im * rhs.im) / r,
-            im: (-self.re * rhs.im + self.im * rhs.im) / r,
+            im: (-self.re * rhs.im + self.im * rhs.re) / r,
         }
     }
 }
