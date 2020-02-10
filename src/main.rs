@@ -29,7 +29,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let input = (0..4096)
         .map(|i| 2. * std::f64::consts::PI * (i as f64) / 4096.)
         .map(|x| x.sin() + x.cos() + 0.5 * (3. * x).cos())
-        .collect();
+        .collect::<Vec<_>>();
 
     let output = real_ifft(&real_fft(&input));
 

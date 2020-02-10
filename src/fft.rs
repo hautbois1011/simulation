@@ -1,9 +1,8 @@
 use super::complex::Complex;
 
 pub fn fft(input: &Vec<Complex>, inverse: bool) -> Vec<Complex> {
-    let len = input.len();
-    let l = (len as f64).log2().ceil() as u32;
-    let n = 2u32.pow(l) as usize;
+    let n = input.len();
+    let l = (n as f64).log2().ceil() as u32;
     let mut x = input.clone();
     let y = &mut vec![Complex::new(0.0, 0.0); n];
 
@@ -35,7 +34,7 @@ pub fn fft(input: &Vec<Complex>, inverse: bool) -> Vec<Complex> {
     x.clone()
 }
 
-pub fn real_fft(input: &Vec<f64>) -> Vec<Complex> {
+pub fn real_fft(input: &[f64]) -> Vec<Complex> {
     let n = input.len();
     let mut y = vec![Complex::new(0.0, 0.0); n / 2];
 
@@ -67,7 +66,7 @@ pub fn real_fft(input: &Vec<f64>) -> Vec<Complex> {
     a
 }
 
-pub fn real_ifft(input: &Vec<Complex>) -> Vec<f64> {
+pub fn real_ifft(input: &[Complex]) -> Vec<f64> {
     let n = input.len() - 1;
 
     let d = (0..n)
@@ -78,7 +77,7 @@ pub fn real_ifft(input: &Vec<Complex>) -> Vec<f64> {
                     * Complex::exp2pi((k as f64) / ((2 * n) as f64))
                     * (input[k] - input[n - k].conj())
         })
-        .collect();
+        .collect::<Vec<_>>();
 
     let y = fft(&d, true);
     let mut x = vec![0.0; 2 * n];
