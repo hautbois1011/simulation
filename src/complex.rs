@@ -65,7 +65,7 @@ impl Sub for Complex {
     }
 }
 
-impl Mul for Complex {
+impl Mul<Complex> for Complex {
     type Output = Complex;
     fn mul(self, rhs: Complex) -> Complex {
         Complex {
@@ -75,13 +75,33 @@ impl Mul for Complex {
     }
 }
 
-impl Div for Complex {
+impl Mul<f64> for Complex {
+    type Output = Complex;
+    fn mul(self, rhs: f64) -> Complex {
+        Complex {
+            re: self.re * rhs,
+            im: self.im * rhs,
+        }
+    }
+}
+
+impl Div<Complex> for Complex {
     type Output = Complex;
     fn div(self, rhs: Complex) -> Complex {
         let r = rhs.re * rhs.re + rhs.im * rhs.im;
         Complex {
             re: (self.re * rhs.re + self.im * rhs.im) / r,
             im: (-self.re * rhs.im + self.im * rhs.re) / r,
+        }
+    }
+}
+
+impl Div<f64> for Complex {
+    type Output = Complex;
+    fn div(self, rhs: f64) -> Complex {
+        Complex {
+            re: self.re / rhs,
+            im: self.im / rhs,
         }
     }
 }

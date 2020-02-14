@@ -57,10 +57,10 @@ pub fn real_fft(input: &[f64]) -> Vec<Complex> {
                 * (c[n / 2 - k] - c[k].conj());
     }
 
-    a[0] = a[0] / Complex::new(n as f64, 0.0);
-    a[n / 2] = a[n / 2] / Complex::new(n as f64, 0.0);
+    a[0] = a[0] / n as f64;
+    a[n / 2] = a[n / 2] / n as f64;
     for k in 1..n / 2 {
-        a[k] = a[k] / Complex::new((n * 2) as f64, 0.0);
+        a[k] = a[k] / (n * 2) as f64;
     }
 
     a

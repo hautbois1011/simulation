@@ -3,6 +3,7 @@ use plotters::prelude::*;
 mod complex;
 mod fft;
 use fft::*;
+mod runge_kutta;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let root = BitMapBackend::new("png/fft.png", (800, 600)).into_drawing_area();
@@ -54,16 +55,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .background_style(&WHITE.mix(0.7))
         .border_style(&BLACK)
         .draw()?;
-
-    // let c = Complex::new(2.0f64, 3.0f64);
-    // let d = Complex::new(2.5f64, 3.0f64);
-    // println!("{:?}", c + d);
-    // println!("{:?}", c - d);
-    // println!("{:?}", c * d);
-    // println!("{:?}", c / d);
-    // println!("{:?}", c.abs());
-    // println!("{:?}", c.abs2());
-    // println!("{:?}", c.exp());
 
     Ok(())
 }
