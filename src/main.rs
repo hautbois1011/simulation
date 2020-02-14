@@ -1,9 +1,12 @@
 extern crate plotters;
 use plotters::prelude::*;
 mod complex;
+use complex::*;
 mod fft;
 use fft::*;
 mod runge_kutta;
+use runge_kutta::*;
+use std::ops::Fn;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let root = BitMapBackend::new("png/fft.png", (800, 600)).into_drawing_area();
@@ -29,14 +32,46 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let input = (0..4096)
         .map(|i| 2. * std::f64::consts::PI * (i as f64) / 4096.)
-        .map(|x| x.sin() + x.cos() + 0.5 * (3. * x).cos())
+        .map(|x| x.sin())
         .collect::<Vec<_>>();
-
     let output = real_ifft(&real_fft(&input));
+
+    let func: Box<dyn Fn(ComplexVec, f64) -> ComplexVec> = Box::new(|u_hat, _t| {
+        let u = real_ifft(&(u_hat.vec));
+        let u_x = real_ifft(
+            &u_hat
+                .vec
+                .iter()
+                .enumerate()
+                .map(|(k, &z)| z * Complex::new(0.0, k as f64))
+                .collect::<Vec<_>>(),
+        );
+        let f = u
+            .iter()
+            .zip(u_x.iter())
+            .map(|(&x, &y)| x * y)
+            .collect::<Vec<_>>();
+        ComplexVec { vec: real_fft(&f) }
+    });
+
+    let mut rk = RungeKutta {
+        x: ComplexVec {
+            vec: real_fft(&input),
+        },
+        func: func,
+        t: 0.0f64,
+        dt: 0.01f64,
+    };
+
+    rk.step();
+    rk.step();
+    rk.step();
+    let o = rk.x.vec;
+    // println!("{:?}", rk.x.vec);
 
     chart
         .draw_series(LineSeries::new(
-            input.iter().enumerate().map(|(i, &x)| (i as f64, x)),
+            output.iter().enumerate().map(|(i, &x)| (i as f64, x)),
             &RED,
         ))?
         .label("input")
@@ -44,10 +79,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     chart
         .draw_series(LineSeries::new(
-            output.iter().enumerate().map(|(i, &x)| (i as f64, x)),
+            real_ifft(&o)
+                .iter()
+                .enumerate()
+                .map(|(i, &x)| (i as f64, x)),
             &BLUE,
         ))?
-        .label("output")
+        .label("output: Re")
         .legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], &BLUE));
 
     chart

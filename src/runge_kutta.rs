@@ -2,7 +2,7 @@ use super::complex::Complex;
 use std::ops::*;
 
 #[derive(Debug, Clone)]
-struct ComplexVec {
+pub struct ComplexVec {
     pub vec: Vec<Complex>,
 }
 
@@ -38,14 +38,14 @@ impl Mul<ComplexVec> for f64 {
     }
 }
 
-struct RungeKutta<F>
+pub struct RungeKutta<F>
 where
     F: Fn(ComplexVec, f64) -> ComplexVec,
 {
-    x: ComplexVec,
-    func: F,
-    t: f64,
-    dt: f64,
+    pub x: ComplexVec,
+    pub func: F,
+    pub t: f64,
+    pub dt: f64,
 }
 
 impl<F> RungeKutta<F>
