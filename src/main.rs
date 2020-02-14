@@ -8,6 +8,8 @@ mod runge_kutta;
 use runge_kutta::*;
 use std::ops::Fn;
 
+const N: usize = 256;
+
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let root = BitMapBackend::new("png/fft.png", (800, 600)).into_drawing_area();
     root.fill(&WHITE)?;
@@ -20,7 +22,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .margin(20)
         .x_label_area_size(10)
         .y_label_area_size(10)
-        .build_ranged(0.0f64..4096.0f64, -2.0f64..2.0f64)?;
+        .build_ranged(0.0f64..(N as f64), -2.0f64..2.0f64)?;
 
     chart.configure_mesh().draw()?;
 
@@ -30,18 +32,18 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     //     .map(|x| Complex::new(x, 0.0))
     //     .collect();
 
-    let input = (0..4096)
-        .map(|i| 2. * std::f64::consts::PI * (i as f64) / 4096.)
+    let input = (0..N)
+        .map(|i| 2. * std::f64::consts::PI * (i as f64) / N as f64)
         .map(|x| x.sin())
         .collect::<Vec<_>>();
     let output = real_ifft(&real_fft(&input));
 
     let func: Box<dyn Fn(ComplexVec, f64) -> ComplexVec> = Box::new(|u_hat, _t| {
-        let u = real_ifft(&(u_hat.vec));
+        let mut uh = u_hat.vec.clone();
+        uh.extend(vec![Complex::new(0.0, 0.0); N / 2]);
+        let u = real_ifft(&uh);
         let u_x = real_ifft(
-            &u_hat
-                .vec
-                .iter()
+            &uh.iter()
                 .enumerate()
                 .map(|(k, &z)| z * Complex::new(0.0, k as f64))
                 .collect::<Vec<_>>(),
@@ -49,9 +51,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let f = u
             .iter()
             .zip(u_x.iter())
-            .map(|(&x, &y)| x * y)
+            .map(|(&x, &y)| -x * y)
             .collect::<Vec<_>>();
-        ComplexVec { vec: real_fft(&f) }
+        ComplexVec {
+            vec: real_fft(&f).into_iter().take(N / 2 + 1).collect(),
+        }
     });
 
     let mut rk = RungeKutta {
@@ -63,9 +67,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         dt: 0.01f64,
     };
 
-    rk.step();
-    rk.step();
-    rk.step();
+    for _ in 0..105 {
+        rk.step();
+    }
+
     let o = rk.x.vec;
     // println!("{:?}", rk.x.vec);
 
