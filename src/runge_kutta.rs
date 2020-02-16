@@ -8,6 +8,7 @@ pub struct ComplexVec {
 
 impl Add for ComplexVec {
     type Output = ComplexVec;
+    #[inline(always)]
     fn add(self, rhs: ComplexVec) -> ComplexVec {
         ComplexVec {
             vec: self
@@ -22,6 +23,7 @@ impl Add for ComplexVec {
 
 impl Mul<f64> for ComplexVec {
     type Output = ComplexVec;
+    #[inline(always)]
     fn mul(self, rhs: f64) -> ComplexVec {
         ComplexVec {
             vec: self.vec.iter().map(|&x| x * rhs).collect(),
@@ -31,6 +33,7 @@ impl Mul<f64> for ComplexVec {
 
 impl Mul<ComplexVec> for f64 {
     type Output = ComplexVec;
+    #[inline(always)]
     fn mul(self, rhs: ComplexVec) -> ComplexVec {
         ComplexVec {
             vec: rhs.vec.iter().map(|&x| x * self).collect(),

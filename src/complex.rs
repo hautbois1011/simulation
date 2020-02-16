@@ -47,6 +47,7 @@ impl Complex {
 // Overload Operators
 impl Add for Complex {
     type Output = Complex;
+    #[inline(always)]
     fn add(self, rhs: Complex) -> Complex {
         Complex {
             re: self.re + rhs.re,
@@ -57,6 +58,7 @@ impl Add for Complex {
 
 impl Sub for Complex {
     type Output = Complex;
+    #[inline(always)]
     fn sub(self, rhs: Complex) -> Complex {
         Complex {
             re: self.re - rhs.re,
@@ -77,6 +79,7 @@ impl Mul<Complex> for Complex {
 
 impl Mul<f64> for Complex {
     type Output = Complex;
+    #[inline(always)]
     fn mul(self, rhs: f64) -> Complex {
         Complex {
             re: self.re * rhs,
@@ -87,6 +90,7 @@ impl Mul<f64> for Complex {
 
 impl Div<Complex> for Complex {
     type Output = Complex;
+    #[inline(always)]
     fn div(self, rhs: Complex) -> Complex {
         let r = rhs.re * rhs.re + rhs.im * rhs.im;
         Complex {
@@ -98,6 +102,7 @@ impl Div<Complex> for Complex {
 
 impl Div<f64> for Complex {
     type Output = Complex;
+    #[inline(always)]
     fn div(self, rhs: f64) -> Complex {
         Complex {
             re: self.re / rhs,
@@ -108,6 +113,7 @@ impl Div<f64> for Complex {
 
 impl Neg for Complex {
     type Output = Complex;
+    #[inline(always)]
     fn neg(self) -> Complex {
         Complex {
             re: -self.re,
