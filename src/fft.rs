@@ -88,3 +88,32 @@ pub fn real_ifft(input: &[Complex]) -> Vec<f64> {
 
     x
 }
+
+pub fn dct(x: &[f64]) -> Vec<f64> {
+    let n = x.len() - 1;
+    let y = (0..=n)
+        .map(|j| {
+            x[j] + x[n - j] + 2. * (j as f64 * std::f64::consts::PI / n as f64) * (x[j] - x[n - j])
+        })
+        .collect::<Vec<f64>>();
+    let ab_tilda = real_fft(&y);
+
+    let mut a = vec![0.0; n / 2 + 1];
+
+    for l in 0..=n / 2 {
+        a[2 * l] = ab_tilda[l].re;
+    }
+
+    a[1] = (0..=n)
+        .map(|j| {
+            x[j] * (j as f64 * std::f64::consts::PI / n as f64)
+                * (if j == 0 || j == n { 0.5 } else { 1. })
+        })
+        .map(|x| x * 2. / n as f64)
+        .sum();
+    for l in 1..n / 2 {
+        a[2 * l + 1] = a[2 * l - 1] + ab_tilda[l].im;
+    }
+
+    a
+}
